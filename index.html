@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CY-Roploit TV Hub</title> <!-- Nome atualizado -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <!-- Fontes do Google (Exemplo: Montserrat e Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Biblioteca HLS.js -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body class="theme-dark-purple"> <!-- Tema padrão aplicado aqui -->
+
+    <header class="site-header">
+        <div class="logo-container">
+            <span class="logo-text">CY-Roploit TV</span>
+            <!-- Ou use uma imagem: <img src="logo.png" alt="Logo"> -->
+        </div>
+        <nav class="main-nav">
+            <div class="filter-container">
+                <input type="search" id="search-input" placeholder="Buscar canal...">
+                <select id="tag-filter">
+                    <option value="all">Todas as Tags</option>
+                    <option value="TV">TV</option>
+                    <option value="Rádio">Rádio</option>
+                    <!-- Adicione mais tags conforme necessário -->
+                </select>
+            </div>
+            <div class="view-options">
+                <button id="grid-view" class="active" title="Visão em Grade">▦</button>
+                <button id="list-view" title="Visão em Lista">≡</button>
+            </div>
+            <div class="theme-switcher">
+                <button data-theme="theme-dark-purple" title="Tema Roxo Neon">🟣</button>
+                <button data-theme="theme-cyber-blue" title="Tema Azul Cyber">🔵</button>
+                <button data-theme="theme-red-alert" title="Tema Vermelho Alert">🔴</button>
+                <button data-theme="theme-pink-glow" title="Tema Rosa Glow">🌸</button>
+                <button data-theme="theme-light-mode" title="Tema Claro">⚪</button>
+            </div>
+             <a href="https://github.com/JempUnkn/webtv-beta" class="github-link" aria-label="View source on GitHub" target="_blank" title="Ver código no GitHub">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            </a>
+        </nav>
+    </header>
+
+    <main class="content-area">
+        <!-- O banner pode ser um background do header ou de uma seção aqui -->
+        <!-- <div class="hero-banner"></div> -->
+
+        <div class="channels-container">
+            <!-- Os canais serão inseridos aqui pelo JavaScript -->
+        </div>
+    </main>
+
+    <div id="player-popup" class="popup">
+        <div class="popup-content">
+            <span id="close-popup" class="close-button">×</span>
+            <video id="video-player" controls autoplay playsinline></video>
+             <div class="popup-info">
+                <h3 id="popup-channel-name">Nome do Canal</h3>
+                <!-- Pode adicionar mais informações aqui se desejar -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer-bottom">
+        <span>copyright © 2024 <a href="https://linktr.ee/CYBERGUILD" target="_blank">Cyberguild</a> | Criado com ❤️</span>
+        <!-- Removi informações de contato direto do HTML -->
+    </footer>
+
+    <!-- Template para o card do canal (será clonado pelo JS) -->
+    <template id="channel-card-template">
+        <div class="channel-card" tabindex="0"> <!-- tabindex para acessibilidade -->
+            <div class="card-image-container">
+                <img src="placeholder.png" alt="Logo do Canal" class="channel-logo" loading="lazy"> <!-- lazy loading -->
+                <div class="status-indicator unknown" title="Status desconhecido"></div>
+            </div>
+            <div class="card-info">
+                <h3 class="channel-name">Nome do Canal</h3>
+                <p class="channel-tags"></p> <!-- Para TV, Rádio, etc. -->
+            </div>
+            <button class="play-button">Assistir</button>
+        </div>
+    </template>
+
+    <!-- Carrega a lista de canais ANTES do script principal -->
+    <script src="https://jempunkn.github.io/webtv-beta/canais.js"></script>
+    <!-- Script principal -->
+    <script src="script.js"></script>
+
+</body>
+</html>
