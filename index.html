@@ -1,9 +1,35 @@
+<!-- Yup, AI, sorry:c -->
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BlackSignal Hub — redesign</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BlackSignal | TV</title>
+<meta name="description" content="Hub de TV e rádio ao vivo — sintonize canais de qualquer lugar, num painel com cara de transmissão clandestina.">
+<meta name="theme-color" content="#0a0910"> <!-- tom do tema roxo/escuro padrão do BlackSignal -->
+ 
+<!-- Open Graph / Discord / Facebook / Telegram / WhatsApp -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://blacksignal.vercel.app/">
+<meta property="og:title" content="BlackSignal | TV">
+<meta property="og:description" content="Hub de TV e rádio ao vivo — sintonize canais de qualquer lugar, num painel com cara de transmissão clandestina.">
+<meta property="og:image" content="https://blacksignal.vercel.app/og-image.png">
+<meta property="og:site_name" content="BlackSignal">
+ 
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image"> <!-- Faz a imagem ficar grande no tweet -->
+<meta name="twitter:url" content="https://blacksignal.vercel.app/">
+<meta name="twitter:title" content="BlackSignal | TV">
+<meta name="twitter:description" content="Hub de TV e rádio ao vivo — sintonize canais de qualquer lugar, num painel com cara de transmissão clandestina.">
+<meta name="twitter:image" content="https://blacksignal.vercel.app/og-image.png">
+ 
+<!-- Apple / iOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BlackSignal">
+<link rel="apple-touch-icon" href="https://blacksignal.vercel.app/apple-icon.png">
+<link rel="icon" href="https://blacksignal.vercel.app/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Sora:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -196,9 +222,88 @@
 
   .clear-filters-btn{
     font-size:11px; padding:9px 10px; border:1px solid var(--border); border-radius:var(--radius);
-    color:var(--text-dim); white-space:nowrap;
+    color:var(--text-dim); white-space:nowrap; width:100%; text-align:left;
   }
   .clear-filters-btn:hover{ color:var(--live); border-color:var(--live); }
+
+  /* ---- filters dropdown (categoria / tipo / região / idioma + limpar) ---- */
+  .filters-dropdown{ position:relative; }
+  .filters-toggle-btn{
+    display:flex; align-items:center; gap:6px;
+    background:var(--bg-panel); border:1px solid var(--border); border-radius:var(--radius);
+    padding:9px 12px; font-size:12px; color:var(--text); white-space:nowrap;
+    transition:border-color .2s, color .2s;
+  }
+  .filters-toggle-btn:hover, .filters-toggle-btn.active{ color:var(--accent); border-color:var(--accent); }
+  .filters-badge{
+    background:var(--accent); color:var(--bg-void); font-family:'JetBrains Mono',monospace;
+    font-size:9.5px; font-weight:700; border-radius:8px; padding:1px 6px; line-height:1.4;
+  }
+  .filters-panel{
+    display:none; position:absolute; top:calc(100% + 6px); right:0; z-index:30;
+    width:230px; background:var(--bg-panel); border:1px solid var(--border); border-radius:var(--radius);
+    padding:10px; box-shadow:0 14px 30px -10px rgba(0,0,0,.45);
+    flex-direction:column; gap:8px;
+  }
+  .filters-panel.open{ display:flex; }
+  .filters-panel .filter-label{
+    font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--text-dim); margin-top:2px;
+  }
+  .filters-panel select{
+    width:100%; background:var(--bg-panel-2); border:1px solid var(--border); border-radius:var(--radius);
+    padding:8px 9px; font-size:12.5px; color:var(--text); outline:none;
+  }
+  .filters-panel select:focus{ border-color:var(--accent); }
+  .filters-panel .clear-filters-btn{ margin-top:6px; }
+
+  /* ---- player: status indicator "blocked" (mixed content / não pode tocar aqui) ---- */
+  .status-indicator.blocked{ color:var(--accent-2); }
+  .status-indicator.blocked::before{ background:var(--accent-2); }
+  .status-indicator.blocked::after{ content:"HTTP ⚠"; }
+
+  /* ---- player controls: agora controlado via JS (auto-hide por inatividade) ---- */
+  .player-controls{ pointer-events:none; }
+  .player-controls.controls-visible{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  .player-frame.no-controls .player-controls{ display:none; }
+
+  .player-extra-btn{ font-size:12px; }
+  #raw-link-btn{ font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.5px; padding:0 6px; white-space:nowrap; }
+
+  .force-play-overlay{
+    position:absolute; inset:0; z-index:4; display:none;
+    flex-direction:column; align-items:center; justify-content:center; gap:10px;
+    background:color-mix(in srgb, #000 55%, transparent);
+  }
+  .force-play-overlay.visible{ display:flex; }
+  .force-play-btn{
+    width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background:color-mix(in srgb, var(--accent) 85%, transparent); color:var(--bg-void); font-size:26px;
+    box-shadow:0 0 0 6px color-mix(in srgb, var(--accent) 20%, transparent);
+  }
+  .force-play-btn:hover{ background:var(--accent); }
+  .force-play-overlay p{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.5px; color:var(--text);
+    max-width:280px; text-align:center; background:color-mix(in srgb, var(--bg-void) 55%, transparent);
+    padding:6px 10px; border-radius:var(--radius);
+  }
+
+  .stream-error-overlay{
+    position:absolute; inset:0; z-index:4; display:none;
+    flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:20px; text-align:center;
+    background:color-mix(in srgb, #000 60%, transparent);
+  }
+  .stream-error-overlay.visible{ display:flex; }
+  .stream-error-overlay .err-title{
+    font-family:'Rajdhani',sans-serif; font-weight:600; font-size:15px; color:var(--live); letter-spacing:.5px;
+  }
+  .stream-error-overlay .err-desc{
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim); max-width:320px;
+  }
+  .stream-error-overlay .err-raw-btn{
+    font-family:'JetBrains Mono',monospace; font-size:11px; padding:8px 14px;
+    border:1px solid var(--accent); color:var(--accent); border-radius:var(--radius);
+  }
+  .stream-error-overlay .err-raw-btn:hover{ background:var(--accent); color:var(--bg-void); }
 
   .channels-container{
     display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:18px;
@@ -411,9 +516,8 @@
     background:linear-gradient(0deg, rgba(0,0,0,.8), transparent);
     opacity:0; transform:translateY(6px); transition:opacity .2s, transform .2s;
   }
-  .player-frame:hover .player-controls, .player-frame:focus-within .player-controls{
-    opacity:1; transform:translateY(0);
-  }
+  /* visibilidade agora é controlada via JS (classe .controls-visible), com base
+     em inatividade do mouse — ver bloco "AUTO-HIDE DE CONTROLES" no script */
   .ctrl-btn{ width:26px; height:26px; display:flex; align-items:center; justify-content:center; color:var(--text); font-size:14px; border-radius:var(--radius); flex-shrink:0; }
   .ctrl-btn:hover{ color:var(--accent); }
 
@@ -498,10 +602,30 @@
 
       <div class="filter-container">
         <input type="search" id="search-input" placeholder="Buscar canal...">
-        <select id="tag-filter">
-          <option value="all">Todas as categorias</option>
-        </select>
-        <button class="clear-filters-btn mono" id="clear-filters-btn" title="Limpar todos os filtros">✕ Limpar</button>
+        <div class="filters-dropdown">
+          <button class="filters-toggle-btn mono" id="filters-toggle-btn" type="button">
+            ☰ Filtros <span class="filters-badge mono" id="filters-badge" style="display:none">0</span>
+          </button>
+          <div class="filters-panel" id="filters-panel">
+            <span class="filter-label mono">Categoria</span>
+            <select id="tag-filter">
+              <option value="all">Todas as categorias</option>
+            </select>
+            <span class="filter-label mono">Tipo</span>
+            <select id="type-filter">
+              <option value="all">Todos os tipos</option>
+            </select>
+            <span class="filter-label mono">Região</span>
+            <select id="region-filter">
+              <option value="all">Todas as regiões</option>
+            </select>
+            <span class="filter-label mono">Idioma</span>
+            <select id="lang-filter">
+              <option value="all">Todos os idiomas</option>
+            </select>
+            <button class="clear-filters-btn mono" id="clear-filters-btn" title="Limpar todos os filtros">✕ Limpar filtros</button>
+          </div>
+        </div>
       </div>
       <div class="view-options">
         <button id="grid-view" title="Visão em Grade">▦</button>
@@ -569,12 +693,25 @@
         <span class="mono">SINTONIZANDO</span>
       </div>
 
-      <div class="player-controls">
+      <div class="force-play-overlay" id="force-play-overlay">
+        <button class="force-play-btn" id="force-play-btn" title="O navegador bloqueou o autoplay — clique para reproduzir">▶</button>
+        <p>O navegador bloqueou a reprodução automática. Clique para sintonizar.</p>
+      </div>
+
+      <div class="stream-error-overlay" id="stream-error-overlay">
+        <span class="err-title mono">SINAL PERDIDO</span>
+        <span class="err-desc" id="stream-error-desc">Não foi possível carregar este canal por aqui.</span>
+        <button class="err-raw-btn mono" id="err-raw-btn">↗ Abrir fonte direta (RAW)</button>
+      </div>
+
+      <div class="player-controls" id="player-controls">
         <button class="ctrl-btn" id="toggle-play" title="Reproduzir / Pausar">▶</button>
         <div class="live-chip mono"><span class="dot-live"></span>AO VIVO</div>
         <div class="elapsed mono" id="elapsed">00:00:00</div>
         <div class="signal-bars" id="signal-bars"><span></span><span></span><span></span><span></span><span></span></div>
         <div class="spacer"></div>
+        <button class="ctrl-btn player-extra-btn" id="toggle-pip" title="Picture-in-Picture">⧉</button>
+        <button class="ctrl-btn" id="raw-link-btn" title="Abrir a URL do stream direto no navegador">RAW ↗</button>
         <button class="ctrl-btn" id="toggle-mute" title="Mudo">🔊</button>
         <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1" title="Volume">
         <button class="ctrl-btn" id="toggle-fullscreen" title="Tela cheia">⛶</button>
@@ -740,6 +877,12 @@ const tpl = document.getElementById('channel-card-template');
 const countEl = document.getElementById('channel-count');
 const searchInput = document.getElementById('search-input');
 const tagFilter = document.getElementById('tag-filter');
+const typeFilter = document.getElementById('type-filter');
+const regionFilter = document.getElementById('region-filter');
+const langFilter = document.getElementById('lang-filter');
+const filtersToggleBtn = document.getElementById('filters-toggle-btn');
+const filtersPanel = document.getElementById('filters-panel');
+const filtersBadge = document.getElementById('filters-badge');
 const sourceSelect = document.getElementById('source-select');
 const srcStatus = document.getElementById('src-status');
 const resyncBtn = document.getElementById('resync-btn');
@@ -775,6 +918,16 @@ const barsEl = document.getElementById('signal-bars');
 const popupName = document.getElementById('popup-channel-name');
 const popupExtra = document.getElementById('popup-extra');
 const popupLogo = document.getElementById('popup-logo');
+const playerControlsEl = document.getElementById('player-controls');
+const forcePlayOverlay = document.getElementById('force-play-overlay');
+const forcePlayBtn = document.getElementById('force-play-btn');
+const streamErrorOverlay = document.getElementById('stream-error-overlay');
+const streamErrorDesc = document.getElementById('stream-error-desc');
+const errRawBtn = document.getElementById('err-raw-btn');
+const rawLinkBtn = document.getElementById('raw-link-btn');
+const btnPip = document.getElementById('toggle-pip');
+
+let currentStreamUrl = ''; // URL "crua" do canal ativo, usada pelo botão RAW
 
 // ================================================================
 //  HELPERS
@@ -801,19 +954,26 @@ function normalizeUrl(url) {
 //  POPULATE TAG FILTER
 // ================================================================
 
-function populateCategoryFilter(channels) {
+function populateFilterSelect(selectEl, values, allLabel) {
   const set = new Set();
-  channels.forEach(ch => { if (ch._category) set.add(ch._category); });
-  const sorted = Array.from(set).sort();
-  const currentVal = tagFilter.value;
-  tagFilter.innerHTML = '<option value="all">Todas as categorias</option>';
-  sorted.forEach(t => {
+  values.forEach(v => { if (v) set.add(v); });
+  const sorted = Array.from(set).sort((a,b) => a.localeCompare(b, 'pt-BR'));
+  const currentVal = selectEl.value;
+  selectEl.innerHTML = `<option value="all">${allLabel}</option>`;
+  sorted.forEach(v => {
     const opt = document.createElement('option');
-    opt.value = t;
-    opt.textContent = t;
-    tagFilter.appendChild(opt);
+    opt.value = v;
+    opt.textContent = v;
+    selectEl.appendChild(opt);
   });
-  tagFilter.value = currentVal !== 'all' && sorted.includes(currentVal) ? currentVal : 'all';
+  selectEl.value = currentVal !== 'all' && sorted.includes(currentVal) ? currentVal : 'all';
+}
+
+function populateAllFilters(channels) {
+  populateFilterSelect(tagFilter, channels.map(ch => ch._category), 'Todas as categorias');
+  populateFilterSelect(typeFilter, channels.map(ch => ch._type), 'Todos os tipos');
+  populateFilterSelect(regionFilter, channels.map(ch => ch._region), 'Todas as regiões');
+  populateFilterSelect(langFilter, channels.map(ch => ch._lang), 'Todos os idiomas');
 }
 
 // ================================================================
@@ -945,17 +1105,35 @@ function renderTvSidebar(list) {
 
 let statusFilterValue = 'all';
 
+function updateFiltersBadge() {
+  const active = [tagFilter.value, typeFilter.value, regionFilter.value, langFilter.value]
+    .filter(v => v && v !== 'all').length;
+  if (active > 0) {
+    filtersBadge.style.display = 'inline';
+    filtersBadge.textContent = active;
+  } else {
+    filtersBadge.style.display = 'none';
+  }
+}
+
 function applyFilters() {
   const q = searchInput.value.trim().toLowerCase();
   const cat = tagFilter.value;
+  const type = typeFilter.value;
+  const region = regionFilter.value;
+  const lang = langFilter.value;
   filteredChannels = allChannels.filter(ch =>
     (!q || ch.name.toLowerCase().includes(q)) &&
     (cat === 'all' || ch._category === cat) &&
+    (type === 'all' || ch._type === type) &&
+    (region === 'all' || ch._region === region) &&
+    (lang === 'all' || ch._lang === lang) &&
     (statusFilterValue === 'all' || ch._status === statusFilterValue)
   );
   render(filteredChannels);
   if (tvModeActive) renderTvSidebar(filteredChannels);
   updateTicker();
+  updateFiltersBadge();
 }
 
 document.querySelectorAll('#status-filter button').forEach(btn => {
@@ -970,11 +1148,29 @@ document.querySelectorAll('#status-filter button').forEach(btn => {
 document.getElementById('clear-filters-btn').addEventListener('click', () => {
   searchInput.value = '';
   tagFilter.value = 'all';
+  typeFilter.value = 'all';
+  regionFilter.value = 'all';
+  langFilter.value = 'all';
   statusFilterValue = 'all';
   document.querySelectorAll('#status-filter button').forEach(b => b.classList.remove('active'));
   document.querySelector('#status-filter button[data-status="all"]').classList.add('active');
   applyFilters();
 });
+
+// ---- abre/fecha o painel de filtros ----
+filtersToggleBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const willOpen = !filtersPanel.classList.contains('open');
+  filtersPanel.classList.toggle('open', willOpen);
+  filtersToggleBtn.classList.toggle('active', willOpen);
+});
+document.addEventListener('click', (e) => {
+  if (!filtersPanel.classList.contains('open')) return;
+  if (e.target.closest('.filters-dropdown')) return;
+  filtersPanel.classList.remove('open');
+  filtersToggleBtn.classList.remove('active');
+});
+[typeFilter, regionFilter, langFilter].forEach(sel => sel.addEventListener('change', applyFilters));
 
 // ================================================================
 //  HEALTH CHECK — verifica se o canal está de fato no ar
@@ -983,7 +1179,7 @@ document.getElementById('clear-filters-btn').addEventListener('click', () => {
 //  servidor respondeu ou se a conexão nunca completou/expirou).
 // ================================================================
 
-const HEALTHCHECK_TIMEOUT = 10000;
+const HEALTHCHECK_TIMEOUT = 20000;
 const HEALTHCHECK_CONCURRENCY = 10;
 const STATUS_CACHE_KEY = 'blacksignal_channel_status_v1';
 
@@ -1013,49 +1209,124 @@ function applyCachedStatus(channels) {
   return anyCached;
 }
 
+// Um fetch() em modo 'no-cors' quase SEMPRE resolve como "sucesso" (mesmo
+// pra 403/404, porque a resposta é opaca e o status não pode ser lido) e só
+// falha de verdade em erro de rede/DNS. Isso já era pouco confiável — mas o
+// motivo mais comum de canal "funciona no Postman/RAW só que aparece
+// Offline aqui" é MIXED CONTENT: esta página roda em HTTPS, e o navegador
+// bloqueia qualquer fetch()/XHR/HLS feito a partir dela para uma URL http://
+// pura, mesmo que o servidor do stream esteja no ar. Colar a URL direto na
+// barra de endereço é uma NAVEGAÇÃO de topo (permitida); um fetch/HLS feito
+// via JS a partir de uma página https não é. Por isso detectamos esse caso
+// separadamente ao invés de reportar "offline" (o que seria enganoso).
+function isMixedContentBlocked(url) {
+  try {
+    return location.protocol === 'https:' && new URL(url, location.href).protocol === 'http:';
+  } catch (e) {
+    return false;
+  }
+}
+
+// Teste real de "dá pra tocar": em vez de um fetch() opaco (que não permite
+// enxergar CORS/Referer/hotlink-403 — justamente os erros que o hls.js sofre
+// de verdade ao tentar reproduzir), montamos um <video>+hls.js escondido e
+// tentamos carregar o manifesto pelo MESMO caminho do player real. Se o
+// manifesto parseia, o canal realmente toca aqui; se dá erro fatal ou estoura
+// o timeout, está de fato indisponível nesta página.
+function probeHlsPlayable(url) {
+  return new Promise((resolve) => {
+    let settled = false;
+    let probeHls = null;
+    const probeVideo = document.createElement('video');
+    probeVideo.muted = true;
+    probeVideo.playsInline = true;
+    probeVideo.style.cssText = 'position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;';
+
+    const timer = setTimeout(() => finish('offline'), HEALTHCHECK_TIMEOUT);
+
+    function cleanup() {
+      clearTimeout(timer);
+      if (probeHls) { try { probeHls.destroy(); } catch (e) {} probeHls = null; }
+      try { probeVideo.removeAttribute('src'); probeVideo.load(); } catch (e) {}
+      probeVideo.remove();
+    }
+    function finish(status) {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(status);
+    }
+
+    document.body.appendChild(probeVideo);
+
+    if (probeVideo.canPlayType('application/vnd.apple.mpegurl')) {
+      probeVideo.addEventListener('loadedmetadata', () => finish('online'), { once: true });
+      probeVideo.addEventListener('error', () => finish('offline'), { once: true });
+      probeVideo.src = url;
+      return;
+    }
+
+    if (window.Hls && Hls.isSupported()) {
+      probeHls = new Hls({ enableWorker: true });
+      probeHls.on(Hls.Events.MANIFEST_PARSED, () => finish('online'));
+      probeHls.on(Hls.Events.ERROR, (event, data) => { if (data.fatal) finish('offline'); });
+      probeHls.loadSource(url);
+      probeHls.attachMedia(probeVideo);
+    } else {
+      finish('unknown'); // navegador sem suporte a HLS nem hls.js — não dá pra afirmar nada
+    }
+  });
+}
+
 async function checkChannelAlive(ch) {
   const url = ch.streamUrl || ch._embedUrl;
-  if (!url) return false;
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), HEALTHCHECK_TIMEOUT);
-  try {
-    await fetch(url, { method: 'GET', mode: 'no-cors', cache: 'no-store', signal: controller.signal });
-    return true; // requisição chegou no servidor sem erro de rede/timeout
-  } catch (e) {
-    return false; // caiu no timeout de 10s ou deu erro de conexão/CORS bloqueante
-  } finally {
-    clearTimeout(timer);
+  if (!url) return 'offline';
+
+  if (isMixedContentBlocked(url)) return 'blocked';
+
+  // canais.js sempre entrega stream de vídeo (HLS); testamos de verdade.
+  if (ch._source === 'canais' || /\.m3u8($|\?)/i.test(url)) {
+    return await probeHlsPlayable(url);
   }
+
+  // iframes embutidos de terceiros (EmbedTV): não dá pra testar sem carregar
+  // a página inteira sem risco de falso positivo/negativo — deixamos como
+  // "desconhecido" em vez de arriscar marcar como offline indevidamente.
+  return 'unknown';
 }
 
 async function runHealthCheck(channels, { onProgress } = {}) {
   const cache = loadStatusCache();
   const srcName = currentSource;
   const queue = channels.slice();
-  let checked = 0, online = 0, offline = 0;
+  let checked = 0, online = 0, offline = 0, blocked = 0;
   const total = channels.length;
 
   async function worker() {
     while (queue.length) {
       const ch = queue.shift();
       ch._status = 'checking';
-      const alive = await checkChannelAlive(ch);
-      ch._status = alive ? 'online' : 'offline';
-      cache[channelCacheKey(srcName, ch)] = { status: ch._status, checkedAt: Date.now() };
-      checked++; alive ? online++ : offline++;
-      onProgress && onProgress({ checked, total, online, offline, remaining: total - checked });
+      const status = await checkChannelAlive(ch);
+      ch._status = status;
+      cache[channelCacheKey(srcName, ch)] = { status, checkedAt: Date.now() };
+      checked++;
+      if (status === 'online') online++;
+      else if (status === 'offline') offline++;
+      else if (status === 'blocked') blocked++;
+      onProgress && onProgress({ checked, total, online, offline, blocked, remaining: total - checked });
     }
   }
 
   const workers = Array.from({ length: Math.min(HEALTHCHECK_CONCURRENCY, channels.length) }, worker);
   await Promise.all(workers);
   saveStatusCache(cache);
-  return { checked, online, offline };
+  return { checked, online, offline, blocked };
 }
 
 function updateHealthBar(p) {
   hcFill.style.width = Math.round((p.checked / p.total) * 100) + '%';
-  hcText.textContent = `verificando ${p.checked}/${p.total} · faltam ${p.remaining} · online ${p.online} · offline ${p.offline}`;
+  const blockedPart = p.blocked ? ` · bloqueados(http) ${p.blocked}` : '';
+  hcText.textContent = `verificando ${p.checked}/${p.total} · faltam ${p.remaining} · online ${p.online} · offline ${p.offline}${blockedPart}`;
 }
 
 async function startHealthCheck(forceAll) {
@@ -1103,10 +1374,16 @@ async function loadSource(srcName) {
     const iptvData = await loadIptvEnrichment();
     channels = channels.map(ch => enrichChannel(ch, iptvData));
 
+    channels.forEach(ch => {
+      ch._type = (ch.type && ch.type !== 'Not registered') ? ch.type : 'TV';
+      ch._region = (ch.reg && ch.reg !== 'Not registered') ? ch.reg : ((ch._iptv && ch._iptv.country) ? ch._iptv.country : '');
+      ch._lang = (ch.lang && ch.lang !== 'Not registered') ? ch.lang : '';
+    });
+
     const hadAnyCache = applyCachedStatus(channels);
 
     allChannels = channels;
-    populateCategoryFilter(allChannels);
+    populateAllFilters(allChannels);
     applyFilters();
     srcStatus.textContent = '✓ ' + channels.length;
     srcStatus.className = 'src-status mono ok';
@@ -1147,17 +1424,66 @@ function updateTicker() {
 //  de playback ('playing'), nunca no momento em que o popup abre.
 // ================================================================
 
+// Tenta dar play e, se o navegador recusar por causa da política de
+// autoplay (Promise rejeitada com NotAllowedError), NÃO escondemos o erro —
+// mostramos um botão de "play forçado" que, por ser um clique real do
+// usuário, tem passe-livre do navegador. Qualquer outro erro (mídia
+// corrompida, stream indisponível) cai no overlay de "sinal perdido".
+function attemptPlay() {
+  const p = video.play();
+  if (!p || !p.catch) return;
+  p.catch((error) => {
+    if (error && error.name === 'NotAllowedError') {
+      showForcePlay();
+    } else {
+      console.warn('Falha ao reproduzir:', error && error.message);
+      showStreamError('O navegador não conseguiu iniciar este stream.');
+    }
+  });
+}
+
+function showForcePlay() {
+  setPlayingUI(false);
+  forcePlayOverlay.classList.add('visible');
+}
+function hideForcePlay() {
+  forcePlayOverlay.classList.remove('visible');
+}
+forcePlayBtn.addEventListener('click', () => {
+  video.play().then(() => {
+    hideForcePlay();
+  }).catch((err) => {
+    console.error('Falha mesmo após clique manual:', err);
+    hideForcePlay();
+    showStreamError('Mesmo com play manual, o stream não iniciou.');
+  });
+});
+
+function showStreamError(desc) {
+  staticOv.classList.add('hidden');
+  hideForcePlay();
+  setPlayingUI(false);
+  streamErrorDesc.textContent = desc || 'Não foi possível carregar este canal por aqui.';
+  streamErrorOverlay.classList.add('visible');
+}
+function hideStreamError() {
+  streamErrorOverlay.classList.remove('visible');
+}
+errRawBtn.addEventListener('click', () => { if (currentStreamUrl) window.open(currentStreamUrl, '_blank', 'noopener'); });
+
 function initHlsPlayer(streamUrl) {
   destroyHlsPlayer();
   embedIframe.style.display = 'none';
   video.style.display = 'block';
   video.src = '';
+  hideStreamError();
+  hideForcePlay();
 
   if (!streamUrl) return;
 
   if (video.canPlayType('application/vnd.apple.mpegurl')) {
     video.src = streamUrl;
-    video.play().catch(() => {});
+    attemptPlay();
     return;
   }
 
@@ -1166,16 +1492,38 @@ function initHlsPlayer(streamUrl) {
     hlsInstance.loadSource(streamUrl);
     hlsInstance.attachMedia(video);
     hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-      video.play().catch(() => {});
+      attemptPlay();
     });
     hlsInstance.on(Hls.Events.ERROR, (event, data) => {
-      if (data.fatal) {
-        console.warn('HLS fatal error, tentando recuperar...');
-        hlsInstance.recoverMediaError();
+      if (!data.fatal) return;
+      // Segue a recomendação oficial do hls.js: cada tipo de erro fatal
+      // pede uma recuperação diferente — chamar recoverMediaError pra tudo
+      // (como antes) não resolve erros de rede/CORS e mascarava a causa.
+      switch (data.type) {
+        case Hls.ErrorTypes.NETWORK_ERROR:
+          console.warn('HLS erro de rede fatal (possível CORS/hotlink/servidor fora do ar):', data.details);
+          // uma tentativa de restart; se falhar de novo, mostramos o erro
+          if (!hlsInstance._blackRetried) {
+            hlsInstance._blackRetried = true;
+            hlsInstance.startLoad();
+          } else {
+            showStreamError('Erro de rede ao carregar o stream (pode ser bloqueio de CORS ou o servidor recusando a conexão).');
+          }
+          break;
+        case Hls.ErrorTypes.MEDIA_ERROR:
+          console.warn('HLS erro de mídia fatal, tentando recuperar...', data.details);
+          hlsInstance.recoverMediaError();
+          break;
+        default:
+          console.warn('HLS erro fatal não recuperável:', data.details);
+          showStreamError('Este canal não pôde ser reproduzido aqui.');
+          destroyHlsPlayer();
+          break;
       }
     });
   } else {
     video.src = streamUrl;
+    attemptPlay();
   }
 }
 
@@ -1210,18 +1558,45 @@ function setPlayingUI(isPlaying) {
 
 function togglePlay() {
   if (embedIframe.style.display !== 'none') return; // sem controle sobre o player embutido de terceiros
-  if (video.paused) { video.play().catch(() => {}); }
+  if (video.paused) { attemptPlay(); }
   else { video.pause(); }
 }
 btnPlay.addEventListener('click', togglePlay);
 video.addEventListener('click', togglePlay);
 
 // só conta minutagem e esconde a estática quando o conteúdo REALMENTE começa
-video.addEventListener('playing', () => { staticOv.classList.add('hidden'); setPlayingUI(true); });
+video.addEventListener('playing', () => {
+  staticOv.classList.add('hidden');
+  hideForcePlay();
+  hideStreamError();
+  setPlayingUI(true);
+});
 video.addEventListener('pause', () => setPlayingUI(false));
 video.addEventListener('waiting', () => staticOv.classList.remove('hidden'));
 embedIframe.addEventListener('load', () => {
   if (embedIframe.src) { staticOv.classList.add('hidden'); setPlayingUI(true); }
+});
+
+// ---- Picture-in-Picture ----
+function updatePipAvailability() {
+  const supported = document.pictureInPictureEnabled && embedIframe.style.display === 'none';
+  btnPip.style.display = supported ? 'flex' : 'none';
+}
+btnPip.addEventListener('click', async () => {
+  try {
+    if (document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+    } else if (document.pictureInPictureEnabled && !video.disablePictureInPicture) {
+      await video.requestPictureInPicture();
+    }
+  } catch (err) {
+    console.warn('Picture-in-Picture indisponível:', err.message);
+  }
+});
+
+// ---- RAW: abre a URL crua do stream direto numa nova aba ----
+rawLinkBtn.addEventListener('click', () => {
+  if (currentStreamUrl) window.open(currentStreamUrl, '_blank', 'noopener');
 });
 
 btnMute.addEventListener('click', () => {
@@ -1263,6 +1638,40 @@ btnFs.addEventListener('click', () => {
 });
 
 // ================================================================
+//  AUTO-HIDE DE CONTROLES — mostra ao mover o mouse, some depois de
+//  3s parado (mesmo com o mouse ainda em cima do player), igual
+//  YouTube/Netflix. Antes disso a UI só sumia quando o cursor saía
+//  do quadro (:hover puro), então nunca desaparecia com o mouse parado
+//  em cima, inclusive em tela cheia.
+// ================================================================
+const CONTROLS_HIDE_DELAY = 3000;
+let controlsHideTimer = null;
+
+function showControls() {
+  playerControlsEl.classList.add('controls-visible');
+  frame.style.cursor = '';
+  clearTimeout(controlsHideTimer);
+  controlsHideTimer = setTimeout(hideControlsIfPlaying, CONTROLS_HIDE_DELAY);
+}
+function hideControlsIfPlaying() {
+  // só esconde se algo estiver de fato tocando; se estiver pausado/carregando
+  // ou com algum overlay de erro/force-play em cima, mantém os controles visíveis
+  const hasOverlay = forcePlayOverlay.classList.contains('visible') || streamErrorOverlay.classList.contains('visible');
+  if (video.paused && embedIframe.style.display === 'none') return;
+  if (hasOverlay) return;
+  playerControlsEl.classList.remove('controls-visible');
+  frame.style.cursor = 'none';
+}
+frame.addEventListener('mousemove', showControls);
+frame.addEventListener('mouseenter', showControls);
+frame.addEventListener('mouseleave', () => {
+  clearTimeout(controlsHideTimer);
+  playerControlsEl.classList.remove('controls-visible');
+  frame.style.cursor = '';
+});
+frame.addEventListener('focusin', showControls);
+
+// ================================================================
 //  LOAD / OPEN / PLAY CHANNEL
 // ================================================================
 
@@ -1289,6 +1698,8 @@ function loadChannel(ch) {
   elapsedSeconds = 0;
   elapsedEl.textContent = '00:00:00';
   staticOv.classList.remove('hidden');
+  hideForcePlay();
+  hideStreamError();
   setPlayingUI(false);
 
   embedIframe.style.display = 'none';
@@ -1296,7 +1707,18 @@ function loadChannel(ch) {
   video.style.display = 'block';
   video.volume = parseFloat(volumeSlider.value);
 
-  if (ch._source === 'embedtv' && ch._embedUrl) {
+  currentStreamUrl = ch.streamUrl || ch._embedUrl || '';
+  rawLinkBtn.style.display = currentStreamUrl ? 'flex' : 'none';
+
+  const targetUrl = ch.streamUrl || ch._embedUrl;
+  if (targetUrl && isMixedContentBlocked(targetUrl)) {
+    // não adianta nem tentar: o navegador vai barrar por mixed content da
+    // mesma forma que barraria no health check. Avisamos direto, sem UI
+    // fingindo "sintonizando" pra sempre.
+    destroyHlsPlayer();
+    staticOv.classList.add('hidden');
+    showStreamError('Este canal usa um link HTTP inseguro e esta página é HTTPS — o navegador bloqueia a conexão. Use o botão RAW para assistir em uma aba separada.');
+  } else if (ch._source === 'embedtv' && ch._embedUrl) {
     initIframePlayer(ch._embedUrl);
   } else if (ch.streamUrl) {
     initHlsPlayer(ch.streamUrl);
@@ -1304,6 +1726,9 @@ function loadChannel(ch) {
     // sem stream real disponível pra esse item — simula sintonia
     setTimeout(() => { staticOv.classList.add('hidden'); setPlayingUI(true); }, 700);
   }
+
+  updatePipAvailability();
+  showControls();
 }
 
 function openPopup(ch) {
@@ -1322,8 +1747,13 @@ function stopPlayback() {
   embedIframe.style.display = 'none';
   video.style.display = 'block';
   clearInterval(elapsedTimer);
+  clearTimeout(controlsHideTimer);
   setPlayingUI(false);
   staticOv.classList.add('hidden');
+  hideForcePlay();
+  hideStreamError();
+  playerControlsEl.classList.remove('controls-visible');
+  currentStreamUrl = '';
   activeChannel = null;
 }
 
